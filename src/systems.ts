@@ -43,7 +43,7 @@ export const movement: System = (w) => {
         C.PositionX[eid] = Math.random() * w.canvas.width
         C.Size[eid] = (Math.random() * 10) + 10
         C.PositionY[eid] = 0
-        C.Speed[eid]++
+        C.Speed[eid] = C.Speed[eid] + (5 / C.Speed[eid])
       }
     }
   })

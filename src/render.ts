@@ -20,11 +20,11 @@ export function render(w: GameWorld) {
 
     C.Enemy.forEach(eid => {
       switch (true) {
-        case C.Speed[eid] < 7:
+        case C.Speed[eid] < 10:
           w.ctx.fillStyle = '#44475a'
           w.ctx.shadowColor = '#44475a'
           break
-        case C.Speed[eid] < 9:
+        case C.Speed[eid] < 20:
           w.ctx.fillStyle = '#6272a4'
           w.ctx.shadowColor = '#6272a4'
           break
