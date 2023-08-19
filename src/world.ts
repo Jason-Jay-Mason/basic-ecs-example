@@ -1,7 +1,7 @@
-import { Component } from './component'
+import { Component, Tag } from './component'
 
 export type GameWorld = {
-  [key: symbol]: Component
+  [key: symbol]: Component | Tag
   currentEid: number
   ctx: CanvasRenderingContext2D
   canvas: HTMLCanvasElement

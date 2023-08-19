@@ -5,54 +5,62 @@ import { GameWorld } from './world'
 type System = (w: GameWorld) => GameWorld
 
 export const spawn: System = (w) => {
-  if (C.Player.eids.length < 1) {
+  if (C.Player.size < 1) {
     const eid = createPlayer(w)
     Helpers.mountControles(eid)
   }
 
-  if (C.Enemy.eids.length < w.maxEnemies) {
+  if (C.Enemy.size < w.maxEnemies) {
     createEnemy(w)
   }
 
   return w
 }
 
+
+
 export const movement: System = (w) => {
-  C.ControlesLeft.forEach((eid: Entity) => {
-    switch (1) {
-      case C.ControlesLeft[eid]:
-        C.PositionX[eid] = C.PositionX[eid] - C.Speed[eid]
-        break
-      case C.ControlesUp[eid]:
-        C.PositionY[eid] = C.PositionY[eid] - C.Speed[eid]
-        break
-      case C.ControlesRight[eid]:
-        C.PositionX[eid] = C.PositionX[eid] + C.Speed[eid]
-        break
-      case C.ControlesDown[eid]:
-        C.PositionY[eid] = C.PositionY[eid] + C.Speed[eid]
+  C.Speed.eids.forEach((eid: Entity) => {
+    if (C.Player.has(eid)) {
+      switch (true) {
+        case C.ControlesLeft[eid] && C.PositionX[eid] > 20:
+          C.PositionX[eid] = C.PositionX[eid] - C.Speed[eid]
+          break
+        case C.ControlesUp[eid] && C.PositionY[eid] > 30:
+          C.PositionY[eid] = C.PositionY[eid] - C.Speed[eid]
+          break
+        case C.ControlesRight[eid] && C.PositionX[eid] < w.canvas.width - 20:
+          C.PositionX[eid] = C.PositionX[eid] + C.Speed[eid]
+          break
+        case C.ControlesDown[eid] && C.PositionY[eid] < w.canvas.height - 30:
+          C.PositionY[eid] = C.PositionY[eid] + C.Speed[eid]
+      }
+
+    }
+    if (C.Enemy.has(eid)) {
+      C.PositionY[eid] = C.PositionY[eid] + C.Speed[eid]
+      if (C.PositionY[eid] > w.canvas.height) {
+        C.PositionX[eid] = Math.random() * w.canvas.width
+        C.Size[eid] = (Math.random() * 10) + 10
+        C.PositionY[eid] = 0
+        C.Speed[eid]++
+      }
     }
   })
-  C.Enemy.eids.forEach((eid: Entity) => {
-    C.PositionY[eid] = C.PositionY[eid] + C.Speed[eid]
-    if (C.PositionY[eid] > w.canvas.height) {
-      C.PositionX[eid] = Math.random() * w.canvas.width
-      C.Size[eid] = (Math.random() * 10) + 10
-      C.PositionY[eid] = 0
-      C.Speed[eid]++
-    }
-  })
+
   return w
 }
 
 export const collision: System = (w) => {
   w.score = w.score + 17
-  C.Player.eids.forEach(eid => {
-    C.Enemy.eids.every(enemy => {
+  const players = Array.from(C.Player)
+  const enemies = Array.from(C.Enemy)
+  players.forEach(player => {
+    enemies.every(enemy => {
       const collision = Math.hypot(
-        C.PositionY[eid] - C.PositionY[enemy],
-        C.PositionX[eid] - C.PositionX[enemy]) <
-        (C.Size[eid] + C.Size[enemy])
+        C.PositionY[player] - C.PositionY[enemy],
+        C.PositionX[player] - C.PositionX[enemy]) <
+        (C.Size[player] + C.Size[enemy])
       if (collision) {
         Helpers.loseGame(w)
         return false
@@ -74,12 +82,12 @@ function loseGame(w: GameWorld) {
   }
   w.score = 0
 
-  C.Player.eids.forEach(eid => {
+  C.Player.forEach(eid => {
     C.PositionY[eid] = w.container.clientHeight / 2
     C.PositionX[eid] = w.container.clientWidth / 2
   })
 
-  C.Enemy.eids.forEach(eid => {
+  C.Enemy.forEach(eid => {
     C.Speed[eid] = Math.random() * 7
     C.Size[eid] = (Math.random() * 10) + 10
     C.PositionY[eid] = 0

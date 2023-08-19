@@ -8,7 +8,7 @@ export function render(w: GameWorld) {
     w.ctx.font = "20px serif";
     w.ctx.fillStyle = 'white'
     w.ctx.fillText(`Score: ${Math.round(w.score / 1000)} high: ${w.highScore / 1000}`, 20, 40)
-    C.Player.eids.forEach(eid => {
+    C.Player.forEach(eid => {
       w.ctx.fillStyle = '#f8f8f2'
       w.ctx.shadowColor = '#f1fa8c'
       w.ctx.shadowBlur = 10
@@ -18,7 +18,7 @@ export function render(w: GameWorld) {
       w.ctx.shadowBlur = 7
     })
 
-    C.Enemy.eids.forEach(eid => {
+    C.Enemy.forEach(eid => {
       switch (true) {
         case C.Speed[eid] < 7:
           w.ctx.fillStyle = '#44475a'

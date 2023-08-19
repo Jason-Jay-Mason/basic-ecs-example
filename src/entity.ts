@@ -22,10 +22,10 @@ export function createPlayer(w: GameWorld): Entity {
     C.ControlesUp,
     C.ControlesRight,
     C.ControlesDown,
-    C.Player,
     C.Speed
   ], w)
-  C.Speed[eid] = 0.2
+  C.Player.add(eid)
+  C.Speed[eid] = 20
   C.Size[eid] = 10
   C.PositionY[eid] = w.container.clientHeight / 2
   C.PositionX[eid] = w.container.clientWidth / 2
@@ -37,10 +37,10 @@ export function createEnemy(w: GameWorld): Entity {
   const eid = createEntity([
     C.PositionX,
     C.PositionY,
-    C.Enemy,
     C.Size,
     C.Speed
   ], w)
+  C.Enemy.add(eid)
   C.Speed[eid] = Math.random() * 7
   C.Size[eid] = (Math.random() * 10) + 10
   C.PositionY[eid] = 0
