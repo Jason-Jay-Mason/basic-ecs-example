@@ -1,27 +1,25 @@
-import C from './component'
+import { Component as C, Tag } from './component'
 import { Entity, createEnemy, createPlayer } from "./entity"
 import { GameWorld } from './world'
 
 type System = (w: GameWorld) => GameWorld
 
 export const spawn: System = (w) => {
-  if (C.Player.size < 1) {
+  if (Tag.Player.size < 1) {
     const eid = createPlayer(w)
     Helpers.mountControles(eid)
   }
 
-  if (C.Enemy.size < w.maxEnemies) {
+  if (Tag.Enemy.size < w.maxEnemies) {
     createEnemy(w)
   }
 
   return w
 }
 
-
-
 export const movement: System = (w) => {
   C.Speed.eids.forEach((eid: Entity) => {
-    if (C.Player.has(eid)) {
+    if (Tag.Player.has(eid)) {
       switch (true) {
         case C.ControlesLeft[eid] && C.PositionX[eid] > 20:
           C.PositionX[eid] = C.PositionX[eid] - C.Speed[eid]
@@ -37,7 +35,7 @@ export const movement: System = (w) => {
       }
 
     }
-    if (C.Enemy.has(eid)) {
+    if (Tag.Enemy.has(eid)) {
       C.PositionY[eid] = C.PositionY[eid] + C.Speed[eid]
       if (C.PositionY[eid] > w.canvas.height) {
         C.PositionX[eid] = Math.random() * w.canvas.width
@@ -53,8 +51,8 @@ export const movement: System = (w) => {
 
 export const collision: System = (w) => {
   w.score = w.score + 17
-  const players = Array.from(C.Player)
-  const enemies = Array.from(C.Enemy)
+  const players = Array.from(Tag.Player)
+  const enemies = Array.from(Tag.Enemy)
   players.forEach(player => {
     enemies.every(enemy => {
       const collision = Math.hypot(
@@ -82,12 +80,12 @@ function loseGame(w: GameWorld) {
   }
   w.score = 0
 
-  C.Player.forEach(eid => {
+  Tag.Player.forEach(eid => {
     C.PositionY[eid] = w.container.clientHeight / 2
     C.PositionX[eid] = w.container.clientWidth / 2
   })
 
-  C.Enemy.forEach(eid => {
+  Tag.Enemy.forEach(eid => {
     C.Speed[eid] = Math.random() * 7
     C.Size[eid] = (Math.random() * 10) + 10
     C.PositionY[eid] = 0

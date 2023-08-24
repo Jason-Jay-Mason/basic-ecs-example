@@ -1,20 +1,21 @@
 import { GameWorld } from "./world"
 import { Component } from "./component"
-import C from "./component"
+import { Component as C, Tag } from "./component"
 
 export type Entity = number
 
-export function createEntity(c: Component[], s: GameWorld): Entity {
-  const eid = s.currentEid++
+export function createEntity(c: Component[], w: GameWorld): Entity {
+  const eid = w.currentEid++
   for (const component of c) {
-    component.eids = new Int32Array([...component.eids, eid])
+    component.eids = [...component.eids, eid]
   }
 
   return eid
 }
 
+type EntInitializer = (w: GameWorld) => Entity
 
-export function createPlayer(w: GameWorld): Entity {
+export const createPlayer: EntInitializer = (w) => {
   const eid = createEntity([
     C.PositionX,
     C.PositionY,
@@ -24,7 +25,7 @@ export function createPlayer(w: GameWorld): Entity {
     C.ControlesDown,
     C.Speed
   ], w)
-  C.Player.add(eid)
+  Tag.Player.add(eid)
   C.Speed[eid] = 20
   C.Size[eid] = 10
   C.PositionY[eid] = w.container.clientHeight / 2
@@ -33,14 +34,14 @@ export function createPlayer(w: GameWorld): Entity {
   return eid
 }
 
-export function createEnemy(w: GameWorld): Entity {
+export const createEnemy: EntInitializer = (w) => {
   const eid = createEntity([
     C.PositionX,
     C.PositionY,
     C.Size,
     C.Speed
   ], w)
-  C.Enemy.add(eid)
+  Tag.Enemy.add(eid)
   C.Speed[eid] = Math.random() * 7
   C.Size[eid] = (Math.random() * 10) + 10
   C.PositionY[eid] = 0
@@ -48,3 +49,4 @@ export function createEnemy(w: GameWorld): Entity {
 
   return eid
 }
+
